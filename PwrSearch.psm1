@@ -85,7 +85,6 @@ $go_locations["home"]="~"
 $go_locations["src"]="C:\src"
 $go_locations["bin"]="C:\bin"
 $go_locations["scripts"]=((get-item $profile).Directory.FullName)
-$go_locations["tools"]="~\Documents\Tools"
 
 set-alias go                  Goto-KnownLocation                                 -scope global
 
