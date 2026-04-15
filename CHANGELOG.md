@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Releases are automated by [release-please](https://github.com/googleapis/release-please)
 from [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [1.1.1](https://github.com/ocalvo/PwrSearch/compare/v1.1.0...v1.1.1) (2026-04-15)
+
+
+### Bug Fixes
+
+* **ci:** move publish job into release-please workflow ([524c521](https://github.com/ocalvo/PwrSearch/commit/524c521a229a747fc53401a89d6b5bda44074633))
+* **ci:** use correct branch name in release-please workflow ([69b59e9](https://github.com/ocalvo/PwrSearch/commit/69b59e98ce461e4144f4aa13161124d3b9ff2c2c))
+
 ## [1.1.0](https://github.com/ocalvo/PwrSearch/compare/v1.0.0...v1.1.0) (2026-04-15)
 
 
