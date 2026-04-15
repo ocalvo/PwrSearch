@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Releases are automated by [release-please](https://github.com/googleapis/release-please)
 from [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [1.1.0](https://github.com/ocalvo/PwrSearch/compare/v1.0.0...v1.1.0) (2026-04-15)
+
+
+### Features
+
+* add Get-RepoRoot cmdlet, rename _sd to sd, drop Razzle _XROOT ([e25297f](https://github.com/ocalvo/PwrSearch/commit/e25297f89be22b5e9cee5a4b619121d4eeeba1ec))
+* add Get-RepoRoot cmdlet, rename _sd to sd, drop Razzle _XROOT ([ec4ce9e](https://github.com/ocalvo/PwrSearch/commit/ec4ce9e06841b272be06908d283e63c2b15ce320))
+
 ## [Unreleased]
 
 ### Added
