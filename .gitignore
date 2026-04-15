@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Built binary copied next to psm1 by build.ps1
+/SearchDir.dll
+
 # User-specific files
 *.rsuser
 *.suo

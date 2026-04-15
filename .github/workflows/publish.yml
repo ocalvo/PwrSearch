@@ -10,6 +10,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build SearchDir.dll
+        shell: pwsh
+        run: |
+          .\build.ps1 -Configuration Release
+
       - name: Verify manifest version matches release tag
         shell: pwsh
         run: |
