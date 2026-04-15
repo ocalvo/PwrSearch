@@ -8,6 +8,8 @@
 
 RootModule = 'PwrSearch.psm1'
 
+NestedModules = @('SearchDir.dll')
+
 ModuleVersion = '1.0.0' # x-release-please-version
 
 GUID = '8c1d7a9e-5b2f-4e31-9c4d-6a7b8c9d0e1f'
@@ -22,9 +24,9 @@ Description = 'Fast directory and file search backed by a native SearchDir.dll, 
 
 PowerShellVersion = '5.1'
 
-FunctionsToExport = 'Goto-KnownLocation'
+FunctionsToExport = 'Switch-Location', 'sd'
 
-CmdletsToExport = @()
+CmdletsToExport = 'Search-Directory', 'Get-RepoRoot'
 
 VariablesToExport = @()
 
