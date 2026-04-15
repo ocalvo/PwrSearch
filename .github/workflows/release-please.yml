@@ -12,8 +12,46 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - uses: googleapis/release-please-action@v4
+        id: release
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build SearchDir.dll
+        shell: pwsh
+        run: |
+          .\build.ps1 -Configuration Release
+
+      - name: Verify manifest version matches release tag
+        shell: pwsh
+        run: |
+          $tag = '${{ needs.release-please.outputs.tag_name }}' -replace '^v',''
+          $manifest = Test-ModuleManifest -Path .\PwrSearch.psd1
+          Write-Host "Release tag: $tag"
+          Write-Host "Manifest version: $($manifest.Version)"
+          if ($manifest.Version.ToString() -ne $tag) {
+            throw "Version mismatch: manifest=$($manifest.Version) tag=$tag"
+          }
+
+      - name: Publish to PowerShell Gallery
+        shell: pwsh
+        env:
+          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+        run: |
+          Publish-Module -Path . -NuGetApiKey $env:PSGALLERY_API_KEY -Verbose
