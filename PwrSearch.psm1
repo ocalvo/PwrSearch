@@ -1,91 +1,84 @@
 ########################################################
-# 'go' command and targets
-
-if( $global:go_locations -eq $null )
+# Directory search from the repo root (or cwd if there is no repo).
+function sd
 {
-  $global:go_locations = @{};
-}
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string] $Pattern,
 
-function _sd
-{
-  param([string] $pattern,[switch]$All)
+        [switch] $All
+    )
 
-  $pattern = $pattern.Replace("/","\\");
-  import-module ($PSScriptRoot+'\SearchDir.dll')
+    $Pattern = $Pattern.Replace('/', '\')
 
-  [string[]]$sd
-  if ($env:_XROOT -ne $null )
-  {
-    $sd = $env:_XROOT
-  }
-  else
-  {
-    $sd = (get-location)
-  }
-  [string[]]$exDirs=("objd","obj","objr","objc")
-  if ($env:_XROOT -ne $null )
-  {
-    $exDirs+=$env:_XROOT+"\SetupAuthoring"
-    $exDirs+=$env:_XROOT+"\Tools"
-    $exDirs+=$env:_XROOT+"\public"
-  }
-  if ($env:init -ne $null )
-  {
-    $exDirs+=$env:init
-  }
-  if ( $all.IsPresent )
-  {
-    Search-Directory -Search $sd -ExcludeDirectories $exDirs -Pattern $pattern -All
-  }
-  else
-  {
-    Search-Directory -Search $sd -ExcludeDirectories $exDirs -Pattern $pattern
-  }
+    $root = Get-RepoRoot
+    if (-not $root) { $root = (Get-Location).Path }
+
+    [string[]] $exclude = @('obj', 'objd', 'objr', 'objc', 'bin', '.git', 'node_modules')
+
+    if ($All.IsPresent)
+    {
+        Search-Directory -SearchDirectories $root -ExcludeDirectories $exclude -Pattern $Pattern -All
+    }
+    else
+    {
+        Search-Directory -SearchDirectories $root -ExcludeDirectories $exclude -Pattern $Pattern
+    }
 }
 
 function _gosd
 {
-  param([string] $pattern)
-  $dir = $null
-  if (test-path $pattern)
-  {
-    $dir = (gi $pattern)
-  }
-  else
-  {
-    $dir = (_sd $pattern)
-  }
+    param([string] $pattern)
 
-  if (!($dir -eq $null))
-  {
-    $fn= $dir.FullName
-    pushd $fn
-    return $true
-  }
-
-  return $false
-}
-
-function global:Goto-KnownLocation([string] $location)
-{
-  if ( $go_locations.ContainsKey($location) )
-  {
-    set-location $go_locations[$location];
-  }
-  else
-  {
-    if (!(_gosd $location))
+    if (Test-Path $pattern)
     {
-      write-output "The following locations are defined:";
-      write-output $go_locations;
+        Push-Location (Get-Item $pattern).FullName
+        return $true
     }
-  }
+
+    $dir = sd $pattern
+    if ($dir)
+    {
+        Push-Location $dir.FullName
+        return $true
+    }
+
+    return $false
 }
-$go_locations["home"]="~"
-$go_locations["src"]="C:\src"
-$go_locations["bin"]="C:\bin"
-$go_locations["scripts"]=((get-item $profile).Directory.FullName)
 
-set-alias go                  Goto-KnownLocation                                 -scope global
+########################################################
+# `go` — named navigation with `sd` fallback.
 
-Export-ModuleMember -Function Goto-KnownLocation
+if ($null -eq $global:go_locations)
+{
+    $global:go_locations = @{}
+}
+
+function Switch-Location
+{
+    [CmdletBinding()]
+    param([string] $Name)
+
+    if ($go_locations.ContainsKey($Name))
+    {
+        Set-Location $go_locations[$Name]
+    }
+    else
+    {
+        if (-not (_gosd $Name))
+        {
+            Write-Output 'The following locations are defined:'
+            Write-Output $go_locations
+        }
+    }
+}
+
+$go_locations['home']    = '~'
+$go_locations['src']     = 'C:\src'
+$go_locations['bin']     = 'C:\bin'
+$go_locations['scripts'] = (Get-Item $profile).Directory.FullName
+
+Set-Alias go Switch-Location
+
+Export-ModuleMember -Function Switch-Location, sd -Cmdlet * -Alias go
