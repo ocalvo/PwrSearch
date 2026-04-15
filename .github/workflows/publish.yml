@@ -1,0 +1,29 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify manifest version matches release tag
+        shell: pwsh
+        run: |
+          $tag = '${{ github.event.release.tag_name }}' -replace '^v',''
+          $manifest = Test-ModuleManifest -Path .\PwrSearch.psd1
+          Write-Host "Release tag: $tag"
+          Write-Host "Manifest version: $($manifest.Version)"
+          if ($manifest.Version.ToString() -ne $tag) {
+            throw "Version mismatch: manifest=$($manifest.Version) tag=$tag"
+          }
+
+      - name: Publish to PowerShell Gallery
+        shell: pwsh
+        env:
+          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+        run: |
+          Publish-Module -Path . -NuGetApiKey $env:PSGALLERY_API_KEY -Verbose
