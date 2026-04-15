@@ -69,34 +69,34 @@ $go_locations['myrepo'] = 'C:\repos\myrepo'
 
 `SearchDir.dll` is gitignored; run `build.ps1` once after cloning before importing the module. CI (`publish.yml`) runs the same script.
 
-## Release Automation — Conventional Commit PR Titles (IMPORTANT)
+## Branch and PR Policy (release-please)
 
-This repo uses [release-please](https://github.com/googleapis/release-please) to bump `PwrSearch.psd1`'s `ModuleVersion` and generate `CHANGELOG.md` from commit history. **Release-please parses Conventional Commit messages from merged PRs to decide how to bump the version** — if a PR title doesn't match the grammar, release-please silently ignores it and the next release ships with a missing or incorrect entry.
+**Never commit directly to `main`.** All changes must go through a feature branch and pull request. This repo uses [release-please](https://github.com/googleapis/release-please) to bump `PwrSearch.psd1`'s `ModuleVersion` and generate `CHANGELOG.md` from merged PR titles.
 
-**Never commit directly to `main` in this repo.** Release-please only opens (or updates) a release PR when it sees new Conventional Commit entries land on `main` via a merged PR — direct pushes to `main` that aren't part of a release-please PR are an anti-pattern, because they bypass the PR-title grammar check and are harder to revert. The workflow is always:
+1. `git checkout -b <short-slug>` — e.g. `feat/sd-depth`, `fix/reporoot-worktree`.
+2. Commit on that branch.
+3. `gh pr create --title "<type>: <description>" --body "..."` — use `--base main`.
+4. Squash-merge; GitHub uses the PR title as the commit subject, which release-please parses.
+5. Release-please opens/updates a release PR bumping `PwrSearch.psd1` and `CHANGELOG.md`. Merge that to publish.
 
-1. `git checkout -b <short-slug>` — create a feature branch (e.g. `feat/sd-depth`, `fix/reporoot-worktree`).
-2. Commit your changes on that branch.
-3. `gh pr create --title "<conventional-commit-title>" --body "..."` — open the PR. Use `--base main`.
-4. Merge via squash; GitHub uses the PR title as the squash-commit subject, which is what release-please parses.
-5. On merge, release-please opens or updates a release PR bumping the version in `PwrSearch.psd1` and `CHANGELOG.md`. Merge that PR to publish.
+**PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/):**
 
-**Always use a Conventional Commit-formatted title when creating or updating a PR in this repo.**
-
-Grammar: `<type>[optional scope][!]: <description>`
+```
+<type>[optional scope][!]: <short description>
+```
 
 | Type | Version bump | Use for |
 |------|--------------|---------|
-| `feat:` | minor (`1.2.3` → `1.3.0`) | new features, new cmdlets, new parameters |
-| `fix:` | patch (`1.2.3` → `1.2.4`) | bug fixes |
-| `feat!:` / `fix!:` / `BREAKING CHANGE:` footer | major (`1.2.3` → `2.0.0`) | breaking API or behavior changes |
-| `perf:` | patch | performance improvements |
-| `refactor:` | patch | internal refactor, no behavior change |
-| `docs:` | no release | README / CLAUDE.md / comments only |
-| `test:` | no release | test-only changes |
-| `build:` | no release | build system / dependencies |
-| `ci:` | no release | CI config |
-| `chore:` | no release | housekeeping |
+| `feat` | minor (`1.2.3` → `1.3.0`) | New features, new cmdlets, new parameters |
+| `fix` | patch (`1.2.3` → `1.2.4`) | Bug fixes |
+| `feat!` / `fix!` / `BREAKING CHANGE:` footer | major (`1.2.3` → `2.0.0`) | Breaking API or behavior changes |
+| `perf` | patch | Performance improvements |
+| `refactor` | patch | Internal restructuring, no behavior change |
+| `docs` | no release | Documentation-only (README, CLAUDE.md) |
+| `chore` | no release | Housekeeping, deps, formatting |
+| `build` | no release | Build system, dependencies |
+| `ci` | no release | CI/CD config |
+| `test` | no release | Test-only changes |
 
 Examples:
 
@@ -111,7 +111,12 @@ The `go` alias still works.
 docs: document release-please PR title requirement
 ```
 
-When opening a PR with `gh pr create`, set `--title` to one of the above forms. When squash-merging, GitHub uses the PR title as the commit subject, which is what release-please reads.
+Rules:
+- **Imperative mood** ("add", "fix", "remove" — not "added", "fixes").
+- Under 72 characters.
+- No generic messages ("update files", "misc changes").
+- Split unrelated changes into separate PRs.
+- If a PR title doesn't match the grammar, release-please silently ignores it.
 
 ## Module Layout
 
