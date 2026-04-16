@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Releases are automated by [release-please](https://github.com/googleapis/release-please)
 from [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [1.1.4](https://github.com/ocalvo/PwrSearch/compare/v1.1.3...v1.1.4) (2026-04-16)
+
+
+### Bug Fixes
+
+* **build:** auto-install .NET SDK on Alpine/Ubuntu when missing ([#13](https://github.com/ocalvo/PwrSearch/issues/13)) ([82bb36b](https://github.com/ocalvo/PwrSearch/commit/82bb36b77fc676c302858b3834e3ccb246a1fba4))
+
 ## [1.1.3](https://github.com/ocalvo/PwrSearch/compare/v1.1.2...v1.1.3) (2026-04-16)
 
 
