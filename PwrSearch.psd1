@@ -24,6 +24,8 @@ Description = 'Fast directory and file search backed by a native SearchDir.dll, 
 
 PowerShellVersion = '5.1'
 
+ScriptsToProcess = @('build.ps1')
+
 FunctionsToExport = 'Switch-Location', 'sd'
 
 CmdletsToExport = 'Search-Directory', 'Get-RepoRoot'
