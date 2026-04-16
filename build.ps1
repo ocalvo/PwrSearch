@@ -3,7 +3,8 @@
 param(
     [ValidateSet('Debug','Release')]
     [string]$Configuration = 'Release',
-    [switch]$Force
+    [switch]$Force,
+    [string]$DotnetVersion = '10'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -17,6 +18,18 @@ if (-not $Force -and (Test-Path $target)) {
     return
 }
 
+$sdks = dotnet --list-sdks 2>&1
+if (-not $sdks -or ($sdks -is [System.Management.Automation.ErrorRecord])) {
+    if (Get-Command apk -ErrorAction SilentlyContinue) {
+        Write-Host "No .NET SDK found; installing dotnet${DotnetVersion}-sdk via apk..."
+        & apk add --no-progress "dotnet${DotnetVersion}-sdk"
+    } elseif (Get-Command apt-get -ErrorAction SilentlyContinue) {
+        Write-Host "No .NET SDK found; installing dotnet-sdk-${DotnetVersion}.0 via apt-get..."
+        & apt-get install -y "dotnet-sdk-${DotnetVersion}.0"
+    }
+}
+
+Write-Host "Building SearchDir.dll..."
 dotnet build $proj -c $Configuration | Write-Verbose
 if ($LASTEXITCODE -ne 0) { throw "dotnet build failed with exit code $LASTEXITCODE" }
 
