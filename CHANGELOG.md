@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Releases are automated by [release-please](https://github.com/googleapis/release-please)
 from [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [1.1.2](https://github.com/ocalvo/PwrSearch/compare/v1.1.1...v1.1.2) (2026-04-16)
+
+
+### Bug Fixes
+
+* **build:** quiet build output and auto-run on module import ([#9](https://github.com/ocalvo/PwrSearch/issues/9)) ([b89a5a5](https://github.com/ocalvo/PwrSearch/commit/b89a5a5f6a8fd77db2832f0b096c96a375a189e6))
+
 ## [1.1.1](https://github.com/ocalvo/PwrSearch/compare/v1.1.0...v1.1.1) (2026-04-15)
 
 

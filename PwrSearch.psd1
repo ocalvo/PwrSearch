@@ -10,7 +10,7 @@ RootModule = 'PwrSearch.psm1'
 
 NestedModules = @('SearchDir.dll')
 
-ModuleVersion = '1.1.1' # x-release-please-version
+ModuleVersion = '1.1.2' # x-release-please-version
 
 GUID = '8c1d7a9e-5b2f-4e31-9c4d-6a7b8c9d0e1f'
 
