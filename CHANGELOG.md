@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Releases are automated by [release-please](https://github.com/googleapis/release-please)
 from [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [1.1.3](https://github.com/ocalvo/PwrSearch/compare/v1.1.2...v1.1.3) (2026-04-16)
+
+
+### Bug Fixes
+
+* **build:** skip build when SearchDir.dll already exists ([#11](https://github.com/ocalvo/PwrSearch/issues/11)) ([aba5e32](https://github.com/ocalvo/PwrSearch/commit/aba5e32e89a4d2276b777b2f2e33aa2727173180))
+
 ## [1.1.2](https://github.com/ocalvo/PwrSearch/compare/v1.1.1...v1.1.2) (2026-04-16)
 
 
