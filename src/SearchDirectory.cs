@@ -4,7 +4,7 @@ using System.IO;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
 
-namespace DirHelper
+namespace PwrSearch
 {
     [Cmdlet(VerbsCommon.Search, "Directory")]
     public class SearchDirectory : Cmdlet
@@ -38,9 +38,11 @@ namespace DirHelper
             this.queue = new SearchQueue();
             foreach (string root in this.SearchDirectories)
             {
+                WriteVerbose($"Search-Directory: adding root '{root}'");
                 this.queue.Add(new SearchState(initialQuery, new DirectoryInfo(root), 0));
             }
 
+            WriteVerbose($"Search-Directory: pattern='{this.Pattern}', substringMatch={this.SubstringMatch}, excludes={this.ExcludeDirectories?.Length ?? 0}");
             base.BeginProcessing();
         }
 
@@ -115,6 +117,7 @@ namespace DirHelper
                 {
                     if (next == null)
                     {
+                        WriteVerbose($"Search-Directory: match '{child.FullName}'");
                         WriteObject(child);
                         if (!this.All.IsPresent) { return false; }
                     }
@@ -210,7 +213,7 @@ namespace DirHelper
 
             public static PartQuery Parse(string pattern, bool substringMatch)
             {
-                string[] parts = pattern.Split('\\');
+                string[] parts = pattern.Split(new char[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries);
                 PartQuery next = null;
                 for (int i = parts.Length - 1; i >= 0; i--)
                 {

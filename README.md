@@ -2,14 +2,14 @@
 
 Fast directory search and navigation for PowerShell, powered by a native `Search-Directory` cmdlet written in C#.
 
-Built for very large source trees (Razzle-sized enlistments, Chromium, monorepos) where `Get-ChildItem -Recurse` is too slow. Search a quarter-million-file tree and jump to the match in a single command.
+Built for very large source trees (Windows Source Code, Chromium, monorepos) where `Get-ChildItem -Recurse` is too slow. Search a quarter-million-file tree and jump to the match in a single command.
 
 ## Features
 
 - **`Search-Directory`** — a native cmdlet that streams matches as it walks the tree, with pluggable exclude-dir pruning, case-insensitive ordinal matching, wildcards, and multi-part path patterns.
-- **`_sd`** — thin PowerShell wrapper around `Search-Directory` that auto-detects a Razzle root (`$env:_XROOT`) and excludes build-output dirs (`obj`, `objd`, `objr`, `objc`, plus `Tools`, `public`, `SetupAuthoring` when rooted).
-- **`go`** — friendly `cd`-with-search: jumps to a named location from `$go_locations` or falls back to `_sd` and pushes the first match.
-- **Cross-edition** — targets `netstandard2.0`, works on Windows PowerShell 5.1 and PowerShell 7 (Linux/macOS included, though some excludes are Windows-flavored).
+- **`sd`** — thin PowerShell wrapper around `Search-Directory` that auto-detects the repo root (via `Get-RepoRoot`) and excludes build-output dirs (`obj`, `objd`, `objr`, `objc`, `bin`, `.git`, `node_modules`).
+- **`go`** — friendly `cd`-with-search: jumps to a named location from `$go_locations` or falls back to `sd` and pushes the first match.
+- **Cross-edition** — targets `netstandard2.0`, works on Windows PowerShell 5.1 and PowerShell 7 (Linux/macOS included). Path separators (`\` and `/`) are accepted interchangeably in patterns.
 - **No binary in git** — `SearchDir.dll` is built from source by `build.ps1`; CI builds and publishes to the PowerShell Gallery.
 
 ## Install
@@ -44,7 +44,7 @@ Search-Directory `
 
 - **`-SearchDirectories`** — one or more roots to search.
 - **`-ExcludeDirectories`** — bare names (matched by `Name`, case-insensitive) *and/or* rooted absolute paths (matched by `FullName`). Checks are `HashSet<string>` lookups, so excludes are O(1) per directory.
-- **`-Pattern`** — match string. Backslash splits it into **ordered path parts**: `'src\tools'` matches any `src/*/tools` where both names match their respective directory. Wildcards (`*`) allowed inside each part.
+- **`-Pattern`** — match string. Backslash or forward slash splits it into **ordered path parts**: `'src\tools'` or `'src/tools'` matches any `src/*/tools` where both names match their respective directory. Wildcards (`*`) allowed inside each part.
 - **`-SubstringMatch $true`** — match anywhere in the directory name (default is starts-with).
 - **`-All`** — return every match. Without it, streams the first match and stops.
 
@@ -55,24 +55,25 @@ Search-Directory -SearchDirectories C:\src -ExcludeDirectories obj,bin -Pattern 
     ForEach-Object { $_ | Get-ChildItem -Filter '*.cs' }
 ```
 
-### `_sd` (the fast path)
+### `sd` (the fast path)
 
-Searches from `$env:_XROOT` if set, otherwise from the current location. Automatically excludes common build-output dirs.
+Searches from the repo root (detected by `Get-RepoRoot`) if available, otherwise from the current location. Automatically excludes common build-output dirs.
 
 ```powershell
-_sd foo.cpp           # first match
-_sd foo.cpp -All      # all matches
-_sd 'src\tools'       # multi-part path pattern
+sd foo.cpp           # first match
+sd foo.cpp -All      # all matches
+sd 'src\tools'       # multi-part path pattern (\ or / both work)
+sd src/tools         # same as above
 ```
 
 ### `go` — named navigation
 
 ```powershell
 go home      # ~
-go src       # C:\src
-go bin       # C:\bin
+go src       # C:\src  (Windows only)
+go bin       # C:\bin  (Windows only)
 go scripts   # $profile's directory
-go <name>    # any key in $go_locations, or a _sd fallback search
+go <name>    # any key in $go_locations, or an sd fallback search
 ```
 
 Extend with your own:
@@ -107,12 +108,13 @@ Project layout:
 ```
 PwrSearch/
 ├── PwrSearch.psd1            # module manifest (ModuleVersion is x-release-please-version)
-├── PwrSearch.psm1            # PowerShell glue: _sd, _gosd, go / Goto-KnownLocation
+├── PwrSearch.psm1            # PowerShell glue: sd, _gosd, Switch-Location / go alias
 ├── SearchDir.dll             # built by build.ps1 (gitignored)
 ├── build.ps1                 # dotnet build + copy
 ├── src/
 │   ├── SearchDir.csproj      # SDK-style, netstandard2.0, PowerShellStandard.Library
-│   └── SearchDirectory.cs    # the Search-Directory cmdlet
+│   ├── SearchDirectory.cs    # the Search-Directory cmdlet
+│   └── GetRepoRoot.cs        # the Get-RepoRoot cmdlet
 └── .github/workflows/
     ├── release-please.yml    # opens/maintains a release PR from conventional commits
     └── publish.yml           # on release: setup-dotnet → build → verify manifest → Publish-Module
