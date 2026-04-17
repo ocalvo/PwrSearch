@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Releases are automated by [release-please](https://github.com/googleapis/release-please)
 from [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [1.2.0](https://github.com/ocalvo/PwrSearch/compare/v1.1.4...v1.2.0) (2026-04-17)
+
+
+### Features
+
+* rename DirHelper→PwrSearch, add WriteVerbose, fix cross-platform path handling ([#16](https://github.com/ocalvo/PwrSearch/issues/16)) ([6d7f65b](https://github.com/ocalvo/PwrSearch/commit/6d7f65b482627546a23441f6a32d1d6ea71bddd9))
+
 ## [1.1.4](https://github.com/ocalvo/PwrSearch/compare/v1.1.3...v1.1.4) (2026-04-16)
 
 
