@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Releases are automated by [release-please](https://github.com/googleapis/release-please)
 from [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [1.2.1](https://github.com/ocalvo/PwrSearch/compare/v1.2.0...v1.2.1) (2026-10-21)
+
+
+### Bug Fixes
+
+* stop the build script setting ErrorActionPreference session-wide ([#19](https://github.com/ocalvo/PwrSearch/issues/19)) ([9f5dce9](https://github.com/ocalvo/PwrSearch/commit/9f5dce90ae252b0b4324ea1198e4ca3bb63bf7c2))
+
 ## [1.2.0](https://github.com/ocalvo/PwrSearch/compare/v1.1.4...v1.2.0) (2026-04-17)
 
 
